@@ -10,6 +10,10 @@ subtitle: Subtitle here if desired
 
 Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.
 
+For my intended project that I wish to work on, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords. This issue caught my interest because in a previous internship I had in my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests.
+Interactive New York City eviction map url: https://www.worstevictorsnyc.org/map/ This is somewhat similar in that it focuses on housing issues and displays a graphic of where evictions are the highest across New York City.
+
+
 # Materials and methods
 
 [~ 200 words]
