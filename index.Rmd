@@ -1,10 +1,10 @@
 ---
 title: "GEO 511 Final Project"
 author: Brendan Kunz
-subtitle: Housing Violations by Neighborhood
+subtitle: Housing Violations by Neighborhood 
 ---
 
-# Introduction
+# Introduction 
 
 [~ 200 words]
 
