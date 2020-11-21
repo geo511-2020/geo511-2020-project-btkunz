@@ -14,7 +14,7 @@
 
 <title>GEO 511 Final Project</title>
 
-<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -26,16 +26,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
-<script src="site_libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
-<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
-<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
-<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-binding-2.0.3/leaflet.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -385,7 +375,7 @@ div.tocify {
 <h1>Introduction</h1>
 <p>[~ 200 words]</p>
 <p>Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.</p>
-<p>For my intended project that I wish to work on, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords. This issue caught my interest because in a previous internship I had in my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests. Interactive New York City eviction map url: <a href="https://www.worstevictorsnyc.org/map/" class="uri">https://www.worstevictorsnyc.org/map/</a> This is somewhat similar in that it focuses on housing issues and displays a graphic of where evictions are the highest across New York City.</p>
+<p>For my intended project that I wish to work on, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords. This issue caught my interest because in a previous internship I had in my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests. Also I’m interested in looking at a number of demographics that might correspond with high housing violations such as the tendency for racial minorities to be confined largely to low-income, underdeveloped neighborhoods and also poverty rates. Going into this, it’s important to note that issues concerning housing are highly complex and no single factor is going to be able to explain this and the data provided doesn’t account for what percent of housing units are rentals and what the density of the neighborhoods are to begin with.</p>
 </div>
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
@@ -406,222 +396,53 @@ div.tocify {
 <li>The third most important thing</li>
 </ol>
 <p>See <a href="http://rmarkdown.rstudio.com/">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
-<p>Here’s my first code chunk.</p>
-<pre class="r"><code>1+2</code></pre>
-<pre><code>## [1] 3</code></pre>
 <p>Load any required packages in a code chunk (you may need to install some packages):</p>
-<pre class="r"><code>library(tidyverse)
-library(leaflet)
-library(kableExtra)
+<pre class="r"><code>library(tibble)
+library(rgdal)
+library(sp)
+library(sf)
+library(GISTools)
+library(RColorBrewer)
+library(tbart)
+library(viridis)
+library(dplyr)
+library(sf)
+require(rgdal)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
 <div id="download-and-clean-all-required-data" class="section level2">
 <h2>Download and clean all required data</h2>
-<pre class="r"><code>n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))</code></pre>
-<pre class="r"><code>data %&gt;% 
-  slice(1:10) %&gt;% #show only 1:n rows
-  kable(digits=2,align=&quot;c&quot;)%&gt;% #make table and round to two digits
-  kable_styling(bootstrap_options = 
-                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;)) #apply other formatting</code></pre>
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:center;">
-x
-</th>
-<th style="text-align:center;">
-y
-</th>
-<th style="text-align:center;">
-size
-</th>
-<th style="text-align:center;">
-category
-</th>
-<th style="text-align:center;">
-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-45.01
-</td>
-<td style="text-align:center;">
-23.24
-</td>
-<td style="text-align:center;">
-16.45
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
-1.86
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--75.89
-</td>
-<td style="text-align:center;">
-47.31
-</td>
-<td style="text-align:center;">
-8.11
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
-0.41
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-122.76
-</td>
-<td style="text-align:center;">
-13.09
-</td>
-<td style="text-align:center;">
-5.47
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
-0.63
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-66.36
-</td>
-<td style="text-align:center;">
--7.46
-</td>
-<td style="text-align:center;">
-11.73
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--0.06
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--134.12
-</td>
-<td style="text-align:center;">
-27.40
-</td>
-<td style="text-align:center;">
-12.92
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
-1.09
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--100.65
-</td>
-<td style="text-align:center;">
--2.33
-</td>
-<td style="text-align:center;">
-19.80
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
-0.63
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-57.49
-</td>
-<td style="text-align:center;">
-6.89
-</td>
-<td style="text-align:center;">
-14.97
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--0.75
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--24.34
-</td>
-<td style="text-align:center;">
--55.27
-</td>
-<td style="text-align:center;">
-18.55
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
-0.12
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--102.43
-</td>
-<td style="text-align:center;">
-13.35
-</td>
-<td style="text-align:center;">
-12.41
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
--0.18
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-60.53
-</td>
-<td style="text-align:center;">
--21.14
-</td>
-<td style="text-align:center;">
-8.86
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
-0.74
-</td>
-</tr>
-</tbody>
-</table>
+<pre class="r"><code>neighborhoods &lt;- st_read(dsn = path.expand(&quot;violation_count.shp&quot;), layer = &quot;violation_count&quot;)</code></pre>
+<pre><code>## Reading layer `violation_count&#39; from data source `C:\Users\Brendan\Documents\GEO 511\geo511-2020-project-btkunz\violation_count.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 35 features and 12 fields
+## geometry type:  POLYGON
+## dimension:      XY
+## bbox:           xmin: -78.91246 ymin: 42.82603 xmax: -78.79504 ymax: 42.96641
+## geographic CRS: WGS 84</code></pre>
+<pre class="r"><code>color_scheme &lt;- brewer.pal(9, &quot;Blues&quot;)
+color_scheme &lt;- colorRampPalette(color_scheme)(35)
+
+census_tracts &lt;- cut(neighborhoods$objectid, 35)
+color_scheme &lt;- color_scheme[as.numeric(census_tracts)]
+
+plot(neighborhoods[&quot;objectid&quot;], col = color_scheme)</code></pre>
+<p><img src="index_files/figure-html/housing%20violations-1.png" width="672" /></p>
+<pre class="r"><code>demographics &lt;- st_read(dsn = path.expand(&quot;WeeWoo.shp&quot;), layer = &quot;WeeWoo&quot;)</code></pre>
+<pre><code>## Reading layer `WeeWoo&#39; from data source `C:\Users\Brendan\Documents\GEO 511\geo511-2020-project-btkunz\WeeWoo.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 35 features and 135 fields
+## geometry type:  POLYGON
+## dimension:      XY
+## bbox:           xmin: -78.91246 ymin: 42.82603 xmax: -78.79504 ymax: 42.96641
+## geographic CRS: WGS 84</code></pre>
+<pre class="r"><code>color_scheme &lt;- brewer.pal(9, &quot;Blues&quot;)
+color_scheme &lt;- colorRampPalette(color_scheme)(35)
+
+census_tracts &lt;- cut(demographics$Percent.Wh, 35) 
+color_scheme &lt;- color_scheme[as.numeric(census_tracts)]
+
+#print(demographics$Percent.Wh)
+
+plot(demographics[&quot;Percent.Wh&quot;], col = color_scheme)</code></pre>
+<p><img src="index_files/figure-html/percent%20white%20by%20neighborhood-1.png" width="672" /></p>
 <p>Add any additional processing steps here.</p>
 </div>
 </div>
@@ -630,22 +451,8 @@ c
 <p>[~200 words]</p>
 <p>Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.</p>
 <p>Show tables, plots, etc. and describe them.</p>
-<pre class="r"><code>m &lt;- leaflet(data) %&gt;% 
-  addTiles() %&gt;% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %&gt;% 
-  addPopups(~x[2], ~y[2], &quot;Random popup&quot;)
-m  # a map with the default OSM tile layer</code></pre>
-<div class="figure">
-<div id="htmlwidget-b5ad0f1ae0abd84fd565" style="width:576px;height:288px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b5ad0f1ae0abd84fd565">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[23.2365782093257,47.3110357671976,13.086916655302,-7.46107737533748,27.4008897598833,-2.33169282786548,6.88590176403522,-55.2653477992862,13.3530326094478,-21.1371891573071,52.4286279827356,20.3269079793245,50.9348111785948,41.6557793319225,27.3637805599719,-43.2529717404395,-19.6807803399861,-51.1589662916958,-9.04514492489398,18.4328532870859],[45.0123207271099,-75.8907335065305,122.764434535056,66.3592107407749,-134.123490806669,-100.651296917349,57.4901717249304,-24.3387748952955,-102.430762052536,60.5254599452019,59.9154309835285,-142.732480857521,79.3431314639747,-124.995231125504,176.495757121593,-28.3708345144987,-31.5953201428056,111.886394228786,-77.6599844545126,-85.587267363444],[16.4516815717798,8.11061271699145,5.47104200348258,11.7284362995997,12.9231942375191,19.7962093178649,14.9689395737369,18.5518044314813,12.4095449945889,8.86289820773527,13.4198347723577,15.5212754383683,19.0918324911036,17.0397570054047,14.226718157297,16.0174387530424,15.4162943712436,19.1530984512065,13.6522489867639,11.0478916473221],null,null,{"interactive":true,"className":"","stroke":true,"color":["c","a","a","c","d","d","c","c","d","c","b","a","e","a","c","b","b","c","a","b"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["c","a","a","c","d","d","c","c","d","c","b","a","e","a","c","b","b","c","a","b"],"fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPopups","args":[47.3110357671976,-75.8907335065305,"Random popup",null,null,{"maxWidth":300,"minWidth":50,"autoPan":true,"keepInView":false,"closeButton":true,"className":""}]}],"limits":{"lat":[-55.2653477992862,52.4286279827356],"lng":[-142.732480857521,176.495757121593]}},"evals":[],"jsHooks":[]}</script>
-<p class="caption">
-Map of completely random data
-</p>
-</div>
-<pre class="r"><code>data %&gt;% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>plot(demographics[&quot;Percent.Wh&quot;], col = color_scheme)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
