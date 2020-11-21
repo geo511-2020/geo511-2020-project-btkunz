@@ -3,4 +3,3 @@ title: "About This Website"
 ---
 
 More about this website.
-URL: https://github.com/geo511-2020/geo511-2020-project-btkunz
