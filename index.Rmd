@@ -10,8 +10,7 @@ subtitle: Housing Violations by Neighborhood
 
 Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.
 
-For my intended project that I wish to work on, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords. This issue caught my interest because in a previous internship I had in my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests.
-Interactive New York City eviction map url: https://www.worstevictorsnyc.org/map/ This is somewhat similar in that it focuses on housing issues and displays a graphic of where evictions are the highest across New York City.
+For my intended project that I wish to work on, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords. This issue caught my interest because in a previous internship I had in my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests. Also I’m interested in looking at a number of demographics that might correspond with high housing violations such as the tendency for racial minorities to be confined largely to low-income, underdeveloped neighborhoods and also poverty rates. Going into this, it’s important to note that issues concerning housing are highly complex and no single factor is going to be able to explain this and the data provided doesn’t account for what percent of housing units are rentals and what the density of the neighborhoods are to begin with.
 
 
 # Materials and methods
@@ -22,13 +21,14 @@ Narrative: Clear narrative description of the data sources and methods. Includes
 
 Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
 
+
 Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
 
 You can do bullets like this:
 
 * The first most important thing
 * The second most important thing
-* The third most important thing
+* The third most important thing 
 
 You can do numbers like this:
 
@@ -39,38 +39,49 @@ You can do numbers like this:
 See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the amazing things you can do.
 
 
-Here's my first code chunk.
-```{r}
-1+2
-```
-
 Load any required packages in a code chunk (you may need to install some packages):
 
 ```{r, message=F, warning=F}
-library(tidyverse)
-library(leaflet)
-library(kableExtra)
+library(tibble)
+library(rgdal)
+library(sp)
+library(sf)
+library(GISTools)
+library(RColorBrewer)
+library(tbart)
+library(viridis)
+library(dplyr)
+library(sf)
+require(rgdal)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
 ## Download and clean all required data
-```{r}
-n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))
+```{r housing violations}
+neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
+color_scheme <- brewer.pal(9, "Blues")
+color_scheme <- colorRampPalette(color_scheme)(35)
+
+census_tracts <- cut(neighborhoods$objectid, 35)
+color_scheme <- color_scheme[as.numeric(census_tracts)]
+
+plot(neighborhoods["objectid"], col = color_scheme)
+
 ```
 
-```{r, results='asis'}
-data %>% 
-  slice(1:10) %>% #show only 1:n rows
-  kable(digits=2,align="c")%>% #make table and round to two digits
-  kable_styling(bootstrap_options = 
-                  c("striped", "hover", "condensed", "responsive")) #apply other formatting
+```{r percent white by neighborhood}
+
+demographics <- st_read(dsn = path.expand("WeeWoo.shp"), layer = "WeeWoo")
+color_scheme <- brewer.pal(9, "Blues")
+color_scheme <- colorRampPalette(color_scheme)(35)
+
+census_tracts <- cut(demographics$Percent.Wh, 35) 
+color_scheme <- color_scheme[as.numeric(census_tracts)]
+
+#print(demographics$Percent.Wh)
+
+plot(demographics["Percent.Wh"], col = color_scheme)
+
 ```
 
 Add any additional processing steps here.
@@ -83,20 +94,12 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 
 Show tables, plots, etc. and describe them.
 
-```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
-m <- leaflet(data) %>% 
-  addTiles() %>% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
-  addPopups(~x[2], ~y[2], "Random popup")
-m  # a map with the default OSM tile layer
-```
-
-
 ```{r}
-data %>% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()
+plot(demographics["Percent.Wh"], col = color_scheme)
 ```
+
+
+
 
 # Conclusions
 
