@@ -77,7 +77,6 @@ color_scheme <- colorRampPalette(color_scheme)(35)
 
 census_tract <- cut(demographics$Percent.Wh, 35) 
 color_scheme <- color_scheme[as.numeric(census_tract)]
-breaks <- c(0, 20, 40, 60, 80, 100)
 #str(demographics$Percent.Wh)
 #print(demographics$Percent.Wh)
 
@@ -95,14 +94,14 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 
 Show tables, plots, etc. and describe them.
 
-```{r}
+```{r Percent White Plot}
 plot(demographics["Percent.Wh"], col = color_scheme, main = "Percent White by Neighborhood")
 legend("bottomright", title = "Percent White", legend = levels(cut(demographics$Percent.Wh, 5)), fill = color_scheme)
      
 ```
 
 This map focuses on the issue of lingering segregation in Buffalo that many of us are already aware of, where North and South Buffalo are predominately White while the East side is predominately Black. As stated above, my initial thoughts were that violation reports would be largely concentrated in the East and West sides of Buffalo due to what I perceived to be a large number of rentals relative to the other areas of the city. 
-```{r}
+```{r Housing Violations Plot}
 plot(neighborhoods["NUMPOINTS"], col = color_viol, main = "Housing violation reports by neighborhood")
 legend("bottomright", title = "Housing Violations", legend = levels(cut(neighborhoods$NUMPOINTS, 5)), fill = color_viol) #ISSUE TO NOTE: it seems that the legend is uncooperative in matching the correct colors to the different values so whomever is peer reviewing this, do you have any suggestions?
 ```
