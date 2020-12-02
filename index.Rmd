@@ -64,7 +64,7 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ## Download and clean all required data
 ```{r housing violation map prep}
 #neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
-neighborhoods <- st_read(dsn = "c:/Users/Brendan/Documents/GEO-511/geo511-2020-project-btkunz", layer = "violation_count2")
+neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
 neighborhood <- as(neighborhoods, "Spatial")
 
 color_viol <- brewer.pal(5, "Blues")
