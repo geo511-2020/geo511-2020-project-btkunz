@@ -52,26 +52,55 @@ library(tbart)
 library(viridis)
 library(dplyr)
 library(sf)
+library(sp)
 require(rgdal)
+library(ggmap)
+library(ggplot2)
+library(rgdal)
+library(raster)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
 ## Download and clean all required data
-```{r}
-neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
+```{r housing violation map prep}
+#neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
+neighborhoods <- st_read(dsn = "c:/Users/Brendan/Documents/GEO-511/geo511-2020-project-btkunz", layer = "violation_count2")
+neighborhood <- as(neighborhoods, "Spatial")
+
 color_viol <- brewer.pal(5, "Blues")
 color_viol <- colorRampPalette(color_viol)(35)
-
-census_tracts <- cut(neighborhoods$NUMPOINTS, 35)
+census_tracts <- cut(neighborhood$NUMPOINTS, 35)
 color_viol <- color_viol[as.numeric(census_tracts)]
 
-#plot(neighborhoods["objectid"], col = color_scheme)
+#neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
 
 ```
 
 ```{r}
+register_google(key = "AIzaSyDe3c4qUJe4Y9FEozaAtjZHC0bj7a_uHAI")
+
+#str(neighborhood)
+ map <- get_map(location = c("Buffalo"),
+   zoom = "auto", scale = "auto", maptype = c("terrain"), source = c("google"))
+
+ # #str(map)
+ ggmap(map, extent = "panel")+
+   geom_polygon(data = neighborhood, aes(x, y, col = color_viol))
+#?get_map
+# plot(neighborhoods["NUMPOINTS"], col = color_viol, main = "Housing violation reports by neighborhood")
+# legend("bottomright", title = "Housing Violations", legend = levels(cut(neighborhoods$NUMPOINTS, 5)), fill = color_viol) #ISSUE TO NOTE: it seems that the legend is uncooperative in matching the correct colors to the different values so whomever is peer reviewing this, do you have any suggestions?  
+# plot1 <- ggplot(neighborhood["NUMPOINTS"],aes(x=x,y=y, col = color_viol))+
+#   geom_polygon(aes(fill = color_viol))
+# plot1
+```
+
+
+
+
+```{r}
 
 demographics <- st_read(dsn = path.expand("WeeWoo.shp"), layer = "WeeWoo")
+st_crs(demographics)
 color_scheme <- brewer.pal(5, "Blues")
 color_scheme <- colorRampPalette(color_scheme)(35)
 
