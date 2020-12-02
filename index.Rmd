@@ -77,7 +77,6 @@ color_viol <- color_viol[as.numeric(census_tracts)]
 ```
 
 ```{r}
-register_google(key = "AIzaSyDe3c4qUJe4Y9FEozaAtjZHC0bj7a_uHAI")
 
 #str(neighborhood)
  map <- get_map(location = c("Buffalo"),
