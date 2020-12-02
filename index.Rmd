@@ -6,25 +6,25 @@ subtitle: Housing Violations by Neighborhood
 
 # Introduction 
 
-[~ 200 words]
+[~ 200 words]  you can delete thi line 
 
-Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.
+Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way. You don't need this line anymore I guess
 
 For my intended project that I wish to work on, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords. This issue caught my interest because in a previous internship I had in my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests. Also I’m interested in looking at a number of demographics that might correspond with high housing violations such as the tendency for racial minorities to be confined largely to low-income, underdeveloped neighborhoods and also poverty rates. Going into this, it’s important to note that issues concerning housing are highly complex and no single factor is going to be able to explain this and the data provided doesn’t account for what percent of housing units are rentals and what the density of the neighborhoods are to begin with.
 
 
 # Materials and methods
 
-[~ 200 words]
+[~ 200 words] you can delete this line
 
 Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.
 
-Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
+Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions. you might want to delete this line
 
 
 Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
 
-You can do bullets like this:
+You can do bullets like this: you can delete this line and all the following lines until line 41
 
 * The first most important thing
 * The second most important thing
@@ -112,13 +112,13 @@ color_scheme <- color_scheme[as.numeric(census_tract)]
 
 ```
 
-Add any additional processing steps here.
+Add any additional processing steps here. you might want to delete this line
 
 # Results
 
-[~200 words]
+[~200 words] it is better to delete this line I guess
 
-Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.
+Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data. I is better to delete this line after you are done
 
 Show tables, plots, etc. and describe them.
 
@@ -144,4 +144,4 @@ Clear summary adequately describing the results and putting them in context. Dis
 
 # References
 
-All sources are cited in a consistent manner
+All sources are cited in a consistent manner Do not forget the sources
