@@ -63,10 +63,11 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 
 ## Download and clean all required data
 ```{r housing violation map prep}
-#neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
-neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
+#neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
+URL <- "https://github.com/geo511-2020/geo511-2020-project-btkunz/blob/master/violation_count3.geojson"
+neighborhoods <- st_read(dsn = URL)
 neighborhood <- as(neighborhoods, "Spatial")
-
+str(neighborhoods)
 color_viol <- brewer.pal(5, "Blues")
 color_viol <- colorRampPalette(color_viol)(35)
 census_tracts <- cut(neighborhood$NUMPOINTS, 35)
@@ -77,7 +78,6 @@ color_viol <- color_viol[as.numeric(census_tracts)]
 ```
 
 ```{r}
-
 #str(neighborhood)
  map <- get_map(location = c("Buffalo"),
    zoom = "auto", scale = "auto", maptype = c("terrain"), source = c("google"))
