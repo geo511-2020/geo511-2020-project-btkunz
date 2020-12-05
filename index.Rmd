@@ -58,15 +58,17 @@ library(ggmap)
 library(ggplot2)
 library(rgdal)
 library(raster)
+library(tmap)
+library(kableExtra)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
 ## Download and clean all required data
 ```{r housing violation map prep}
 #neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
-URL <- "https://github.com/geo511-2020/geo511-2020-project-btkunz/blob/master/violation_count3.geojson"
+URL <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson"
 neighborhoods <- st_read(dsn = URL)
-neighborhood <- as(neighborhoods, "Spatial")
+neighborhood <- st_as_sf(neighborhoods,4326)
 str(neighborhoods)
 color_viol <- brewer.pal(5, "Blues")
 color_viol <- colorRampPalette(color_viol)(35)
@@ -78,19 +80,30 @@ color_viol <- color_viol[as.numeric(census_tracts)]
 ```
 
 ```{r}
+library(tmap)
+library(ggmap)
 #str(neighborhood)
- map <- get_map(location = c("Buffalo"),
-   zoom = "auto", scale = "auto", maptype = c("terrain"), source = c("google"))
+ # map <- get_map(location = c("Buffalo"),
+ #   zoom = "auto", scale = "auto", maptype = c("terrain"), source = c("google"))
 
  # #str(map)
- ggmap(map, extent = "panel")+
-   geom_polygon(data = neighborhood, aes(x, y, col = color_viol))
-#?get_map
+ # ggplot(col = neighborhood$NUMPOINTS)+
+ #     geom_sf(data = neighborhoods, aes(x=x,y=y, fill = color_viol))
+ tm_shape(neighborhood)+
+    #tm_polygons(col = "NUMPOINTS", palette = blues9)+
+    tm_fill("NUMPOINTS", palette = blues9, n = 9)+
+    tm_borders()
+#ggplot(data = neighborhood)+ 
+#geom_sf()
+ #?get_map
 # plot(neighborhoods["NUMPOINTS"], col = color_viol, main = "Housing violation reports by neighborhood")
 # legend("bottomright", title = "Housing Violations", legend = levels(cut(neighborhoods$NUMPOINTS, 5)), fill = color_viol) #ISSUE TO NOTE: it seems that the legend is uncooperative in matching the correct colors to the different values so whomever is peer reviewing this, do you have any suggestions?  
 # plot1 <- ggplot(neighborhood["NUMPOINTS"],aes(x=x,y=y, col = color_viol))+
 #   geom_polygon(aes(fill = color_viol))
 # plot1
+ 
+ 
+ #Check out geom_sf to plot polygons rather than using x and y
 ```
 
 
