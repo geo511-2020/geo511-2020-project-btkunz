@@ -170,12 +170,6 @@ legend("bottomright", title = "Percent White", legend = levels(cut(demographics$
 ```
 
   This map focuses on the issue of lingering segregation in Buffalo that many of us are already aware of, where North and South Buffalo are predominately White while the East side is predominately Black. As stated above, my initial thoughts were that violation reports would be largely concentrated in the East and West sides of Buffalo due to what I perceived to be a large number of rentals relative to the other areas of the city. 
-```{r}
-plot(neighborhoods["NUMPOINTS"], col = color_viol, main = "Housing violation reports by neighborhood")
-legend("bottomright", title = "Housing Violations", legend = levels(cut(neighborhoods$NUMPOINTS, 5)), fill = color_viol) #ISSUE TO NOTE: it seems that the legend is uncooperative in matching the correct colors to the different values so whomever is peer reviewing this, do you have any suggestions?  
-```
-
-  This map focuses on the core of what I'm looking at: housing violation allegations filed through the 311 service. As it would appear, my initial thoughts are somewhat accurate where the largest number of housing violations are concentrated in the center of the east side. That being said, I didn't consider how there could be potential slumlord issues off of south campus as I don't have a lot of knowledge about University Heights relative to the rest of the city. Also it seems that housing violations seem to be fairly high in the northern center of North Buffalo which came as a bit of a surprise as I perceived most of North Buffalo to be wealthy single family homes with higher end apartments dotted on the major roads. When moving into the final draft it might be worth looking at how poverty is distributed throughout the city as that could give me a greater understanding of the situation. 
 
 # Conclusions
 
