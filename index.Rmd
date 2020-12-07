@@ -118,7 +118,7 @@ nbhd_bbox[4] <- nbhd_bbox[4] + (0.2 * yrange)
 
 
 
-```{r}
+```{r Poverty Rate}
 URL2 <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson"
 demographics <- st_read(dsn = URL2)
 st_as_sf(demographics,4326)
