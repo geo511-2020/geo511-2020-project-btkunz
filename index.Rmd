@@ -112,13 +112,6 @@ buff_bbox[1] <- buff_bbox[1] - (0.25 * xrange) #learned how to efficiently adjus
 buff_bbox[3] <- buff_bbox[3] + (0.25 * xrange)
 buff_bbox[2] <- buff_bbox[2] - (0.2 * yrange)
 buff_bbox[4] <- buff_bbox[4] + (0.2 * yrange)
-
-# tm_shape(demographics, bbox = buff_bbox)+
-#    tm_fill("Poverty.Ra", title = "Poverty Rate", palette = blues9, n = 9)+
-#    tm_borders()+
-#    tm_layout(title = "Poverty Rate By Neighborhood ", title.position = c("center","top"), title.bg.color = "gray",
-#              title.bg.alpha = 0.5)
-
 ```
 
 Add any additional processing steps here.

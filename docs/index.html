@@ -479,13 +479,7 @@ yrange &lt;- buff_bbox$ymax - buff_bbox$ymin
 buff_bbox[1] &lt;- buff_bbox[1] - (0.25 * xrange) #learned how to efficiently adjust the bbox from stack overflow
 buff_bbox[3] &lt;- buff_bbox[3] + (0.25 * xrange)
 buff_bbox[2] &lt;- buff_bbox[2] - (0.2 * yrange)
-buff_bbox[4] &lt;- buff_bbox[4] + (0.2 * yrange)
-
-# tm_shape(demographics, bbox = buff_bbox)+
-#    tm_fill(&quot;Poverty.Ra&quot;, title = &quot;Poverty Rate&quot;, palette = blues9, n = 9)+
-#    tm_borders()+
-#    tm_layout(title = &quot;Poverty Rate By Neighborhood &quot;, title.position = c(&quot;center&quot;,&quot;top&quot;), title.bg.color = &quot;gray&quot;,
-#              title.bg.alpha = 0.5)</code></pre>
+buff_bbox[4] &lt;- buff_bbox[4] + (0.2 * yrange)</code></pre>
 <p>Add any additional processing steps here.</p>
 </div>
 </div>
