@@ -457,23 +457,7 @@ yrange &lt;- nbhd_bbox$ymax - nbhd_bbox$ymin
 nbhd_bbox[1] &lt;- nbhd_bbox[1] - (0.3 * xrange) #learned how to efficiently adjust the bbox from stack overflow
 nbhd_bbox[3] &lt;- nbhd_bbox[3] + (0.3 * xrange)
 nbhd_bbox[2] &lt;- nbhd_bbox[2] - (0.2 * yrange)
-nbhd_bbox[4] &lt;- nbhd_bbox[4] + (0.2 * yrange)
-
-
- tm_shape(neighborhood, bbox = nbhd_bbox)+
-    #tm_polygons(col = &quot;NUMPOINTS&quot;, palette = blues9)+
-    tm_fill(&quot;NUMPOINTS&quot;, title = &quot;Housing\nViolations&quot;, palette = blues9, n = 9)+
-    tm_borders()+               #helped by Collin
-    tm_layout(title = &quot;Housing Violations By Neighborhood&quot;, title.position = c(&quot;center&quot;,&quot;top&quot;), 
-              title.bg.color = &quot;gray&quot;, title.bg.alpha = 0.5)</code></pre>
-<p><img src="index_files/figure-html/Housing%20Violations-1.png" width="672" /></p>
-<pre class="r"><code>#ggplot(data = neighborhood)+ 
-#geom_sf()
-# plot(neighborhoods[&quot;NUMPOINTS&quot;], col = color_viol, main = &quot;Housing violation reports by neighborhood&quot;)
-# legend(&quot;bottomright&quot;, title = &quot;Housing Violations&quot;, legend = levels(cut(neighborhoods$NUMPOINTS, 5)), fill = color_viol) #ISSUE TO NOTE: it seems that the legend is uncooperative in matching the correct colors to the different values so whomever is peer reviewing this, do you have any suggestions?  
-# plot1 &lt;- ggplot(neighborhood[&quot;NUMPOINTS&quot;],aes(x=x,y=y, col = color_viol))+
-#   geom_polygon(aes(fill = color_viol))
-# plot1</code></pre>
+nbhd_bbox[4] &lt;- nbhd_bbox[4] + (0.2 * yrange)</code></pre>
 <pre class="r"><code>URL2 &lt;- &quot;https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson&quot;
 demographics &lt;- st_read(dsn = URL2)</code></pre>
 <pre><code>## Reading layer `Neighborhood_Statistics&#39; from data source `https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson&#39; using driver `GeoJSON&#39;
@@ -553,6 +537,7 @@ buff_bbox[4] &lt;- buff_bbox[4] + (0.2 * yrange)
 <p>All sources are cited in a consistent manner</p>
 <p><a href="https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/" class="uri">https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/</a></p>
 <p><a href="https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html" class="uri">https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html</a></p>
+<p><a href="https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap" class="uri">https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap</a></p>
 </div>
 
 <!-- give the footer some space -->
