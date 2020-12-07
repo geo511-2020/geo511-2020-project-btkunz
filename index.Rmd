@@ -1,14 +1,17 @@
 ---
-title: "My Final Project Template"
-author: Your name here
-subtitle: Subtitle here if desired
+title: "GEO 511 Final Project"
+author: Brendan Kunz
+subtitle: Housing Violations by Neighborhood 
 ---
 
-# Introduction
+# Introduction 
 
 [~ 200 words]
 
 Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.
+
+For my project, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords, stretching from 2008 to the beginning of 2020. This issue caught my interest because in a previous internship during my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests. Also I’m interested in looking at a number of demographics that might correspond with high housing violations such as the tendency for racial minorities to be confined largely to low-income, underdeveloped neighborhoods and also poverty rates. Going into this, it’s important to note that issues concerning housing are highly complex and no single factor is going to be able to explain this and the data provided doesn’t account for what percent of housing units are rentals and what the density of the neighborhoods are to begin with.
+
 
 # Materials and methods
 
@@ -18,13 +21,14 @@ Narrative: Clear narrative description of the data sources and methods. Includes
 
 Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
 
+
 Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
 
 You can do bullets like this:
 
 * The first most important thing
 * The second most important thing
-* The third most important thing
+* The third most important thing 
 
 You can do numbers like this:
 
@@ -35,38 +39,79 @@ You can do numbers like this:
 See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the amazing things you can do.
 
 
-Here's my first code chunk.
-```{r}
-1+2
-```
-
 Load any required packages in a code chunk (you may need to install some packages):
 
-```{r, message=F, warning=F}
-library(tidyverse)
-library(leaflet)
+```{r Libraries, message=F, warning=F}
+library(tibble)
+library(rgdal)
+library(sp)
+library(sf)
+library(GISTools)
+library(RColorBrewer)
+library(tbart)
+library(viridis)
+library(dplyr)
+require(rgdal)
+library(ggmap)
+library(ggplot2)
+library(raster)
+library(tmap)
 library(kableExtra)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
 ## Download and clean all required data
-```{r}
-n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))
+```{r housing violation map prep, message=F, warning=F}
+#neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
+URL <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson"
+neighborhoods <- st_read(dsn = URL)
+#neighborhood <- st_as_sf(neighborhoods,4326)
+color_viol <- brewer.pal(5, "Blues")
+color_viol <- colorRampPalette(color_viol)(35)
+census_tracts <- cut(neighborhood$NUMPOINTS, 35)
+color_viol <- color_viol[as.numeric(census_tracts)]
+
+#neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
+
 ```
 
-```{r, results='asis'}
-data %>% 
-  slice(1:10) %>% #show only 1:n rows
-  kable(digits=2,align="c")%>% #make table and round to two digits
-  kable_styling(bootstrap_options = 
-                  c("striped", "hover", "condensed", "responsive")) #apply other formatting
+```{r Housing Violations}
+library(tmap)
+library(ggmap)
+
+#Expand bbox to accommodate for a title and legend
+nbhd_bbox <- st_bbox(neighborhood)
+
+print(nbhd_bbox)
+
+xrange <- nbhd_bbox$xmax - nbhd_bbox$xmin
+yrange <- nbhd_bbox$ymax - nbhd_bbox$ymin
+
+nbhd_bbox[1] <- nbhd_bbox[1] - (0.3 * xrange) #learned how to efficiently adjust the bbox from stack overflow
+nbhd_bbox[3] <- nbhd_bbox[3] + (0.3 * xrange)
+nbhd_bbox[2] <- nbhd_bbox[2] - (0.2 * yrange)
+nbhd_bbox[4] <- nbhd_bbox[4] + (0.2 * yrange)
+```
+
+
+
+
+```{r Poverty }
+URL2 <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson"
+demographics <- st_read(dsn = URL2)
+#st_as_sf(demographics,4326)
+
+#Edits to the bbox to accommodate for a title and legend
+buff_bbox <- st_bbox(demographics)
+print(buff_bbox)
+
+xrange <- buff_bbox$xmax - buff_bbox$xmin
+yrange <- buff_bbox$ymax - buff_bbox$ymin
+
+buff_bbox[1] <- buff_bbox[1] - (0.25 * xrange) #learned how to efficiently adjust the bbox from stack overflow
+buff_bbox[3] <- buff_bbox[3] + (0.25 * xrange)
+buff_bbox[2] <- buff_bbox[2] - (0.2 * yrange)
+buff_bbox[4] <- buff_bbox[4] + (0.2 * yrange)
 ```
 
 Add any additional processing steps here.
@@ -79,20 +124,45 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 
 Show tables, plots, etc. and describe them.
 
-```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
-m <- leaflet(data) %>% 
-  addTiles() %>% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
-  addPopups(~x[2], ~y[2], "Random popup")
-m  # a map with the default OSM tile layer
+# Housing Violations Map
+
+```{r Housing Violations Map}
+tm_shape(neighborhood, bbox = nbhd_bbox)+
+    #tm_polygons(col = "NUMPOINTS", palette = blues9)+
+    tm_fill("NUMPOINTS", title = "Housing\nViolations", palette = blues9, n = 9)+
+    tm_borders()+               #helped by Collin
+    tm_layout(title = "Housing Violations By Neighborhood", title.position = c("center","top"), 
+              title.bg.color = "gray", title.bg.alpha = 0.5)
 ```
 
+  With this map, what I found to be informative is how the housing violations seem to be clustered largely in the East side, around UB South campus, and isolated sections of the West side. While I expected the number to be high in the East side and parts of the West side due to the poor state of the housing stock in that area, I was a bit surprised at the higher concentration in the upper bounds of the West side, as I never viewed that area as having issues with housing quality.That being said, the distribution of violations by neighborhood won't be perfectly representative of the actual situation because different neighborhoods have various percentages of units that are rentals and might be less populous due to an abundance of vacant lots.
 
-```{r}
-data %>% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()
+# Poverty Rate Map
+
+```{r Poverty Rate}
+tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill("Poverty.Ra", title = "Poverty Rate", palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = "Poverty Rate By Neighborhood ", title.position = c("center","top"), title.bg.color = "gray", 
+             title.bg.alpha = 0.5)
 ```
+
+  This map focuses on the issue of economic segregation in Buffalo that many of us are already aware of, where North and South Buffalo are predominately middle class while the East side and parts of the West side are predominately lower income. As stated above, my initial thoughts were that violation reports would be largely concentrated in the East and West sides of Buffalo due to what I perceived to be a large number of rentals relative to the other areas of the city. 
+
+# Racial Demographics Map
+
+```{r racial demographics}
+tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill("Percent.Wh", title = "Percent\nWhite", palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = "Percent White By Neighborhood", title.position = c("center","top"), title.bg.color = "gray", 
+             title.bg.alpha = 0.5)
+```
+
+  I set this neighborhood to percent white as unfortunately, OpenDataBuffalo doesn't have a field for all nonwhite racial groups. What this graph shows us when compared to housing violations is that there is a strong correlation between issues of rentals being poorly maintained by the owners and these rentals being in majority-minority neighborhoods. That being said, it's important to take this finding with a grain of salt, as while there is a correlation, the true strength of this correlation is difficult to verify as there can be other issues behind the scenes such as whether the housing violation calls were deemed to be justified or not and how some neighborhoods are dominated by single family homes that are largely owned by their occupants. 
+
+
+
 
 # Conclusions
 
@@ -100,6 +170,14 @@ data %>%
 
 Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
 
+After finishing all of the maps that I'm using to gather information on what seems to correlate to higher numbers of housing violations, it seems that housing violations are fairly representative of the issues of racial and economic segregation that is seen in Buffalo. 
+
 # References
 
 All sources are cited in a consistent manner
+
+https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/
+
+https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html
+
+https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap

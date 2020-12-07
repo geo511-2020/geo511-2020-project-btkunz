@@ -9,12 +9,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Your name here" />
+<meta name="author" content="Brendan Kunz" />
 
 
-<title>My Final Project Template</title>
+<title>GEO 511 Final Project</title>
 
-<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -26,15 +26,17 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
-<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
-<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
-<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-binding-2.0.3/leaflet.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -373,9 +375,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">My Final Project Template</h1>
-<h3 class="subtitle">Subtitle here if desired</h3>
-<h4 class="author">Your name here</h4>
+<h1 class="title toc-ignore">GEO 511 Final Project</h1>
+<h3 class="subtitle">Housing Violations by Neighborhood</h3>
+<h4 class="author">Brendan Kunz</h4>
 
 </div>
 
@@ -384,6 +386,7 @@ div.tocify {
 <h1>Introduction</h1>
 <p>[~ 200 words]</p>
 <p>Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.</p>
+<p>For my project, I’ll be looking at 311 requests in Buffalo that allege code violations by landlords, stretching from 2008 to the beginning of 2020. This issue caught my interest because in a previous internship during my undergrad, I would canvass in mostly low income neighborhoods of Binghamton where I was able to see the negligence of slum lords in these areas. Within Binghamton, these poor living conditions for renters was mostly confined to a handful of neighborhoods so I’m wondering if I will be able to see something similar in Buffalo by looking at the 311 requests. Also I’m interested in looking at a number of demographics that might correspond with high housing violations such as the tendency for racial minorities to be confined largely to low-income, underdeveloped neighborhoods and also poverty rates. Going into this, it’s important to note that issues concerning housing are highly complex and no single factor is going to be able to explain this and the data provided doesn’t account for what percent of housing units are rentals and what the density of the neighborhoods are to begin with.</p>
 </div>
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
@@ -404,222 +407,79 @@ div.tocify {
 <li>The third most important thing</li>
 </ol>
 <p>See <a href="http://rmarkdown.rstudio.com/">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
-<p>Here’s my first code chunk.</p>
-<pre class="r"><code>1+2</code></pre>
-<pre><code>## [1] 3</code></pre>
 <p>Load any required packages in a code chunk (you may need to install some packages):</p>
-<pre class="r"><code>library(tidyverse)
-library(leaflet)
+<pre class="r"><code>library(tibble)
+library(rgdal)
+library(sp)
+library(sf)
+library(GISTools)
+library(RColorBrewer)
+library(tbart)
+library(viridis)
+library(dplyr)
+require(rgdal)
+library(ggmap)
+library(ggplot2)
+library(raster)
+library(tmap)
 library(kableExtra)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
 <div id="download-and-clean-all-required-data" class="section level2">
 <h2>Download and clean all required data</h2>
-<pre class="r"><code>n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))</code></pre>
-<pre class="r"><code>data %&gt;% 
-  slice(1:10) %&gt;% #show only 1:n rows
-  kable(digits=2,align=&quot;c&quot;)%&gt;% #make table and round to two digits
-  kable_styling(bootstrap_options = 
-                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;)) #apply other formatting</code></pre>
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:center;">
-x
-</th>
-<th style="text-align:center;">
-y
-</th>
-<th style="text-align:center;">
-size
-</th>
-<th style="text-align:center;">
-category
-</th>
-<th style="text-align:center;">
-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
--107.26
-</td>
-<td style="text-align:center;">
-9.30
-</td>
-<td style="text-align:center;">
-11.36
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--1.77
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--111.14
-</td>
-<td style="text-align:center;">
--29.83
-</td>
-<td style="text-align:center;">
-10.72
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--0.11
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-110.32
-</td>
-<td style="text-align:center;">
--31.88
-</td>
-<td style="text-align:center;">
-14.28
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
-0.70
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-51.00
-</td>
-<td style="text-align:center;">
--4.69
-</td>
-<td style="text-align:center;">
-15.94
-</td>
-<td style="text-align:center;">
-e
-</td>
-<td style="text-align:center;">
-0.11
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--31.76
-</td>
-<td style="text-align:center;">
-12.75
-</td>
-<td style="text-align:center;">
-6.32
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--1.18
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--154.28
-</td>
-<td style="text-align:center;">
--40.69
-</td>
-<td style="text-align:center;">
-6.96
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
-0.48
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-101.27
-</td>
-<td style="text-align:center;">
--41.97
-</td>
-<td style="text-align:center;">
-10.14
-</td>
-<td style="text-align:center;">
-b
-</td>
-<td style="text-align:center;">
--0.59
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-9.98
-</td>
-<td style="text-align:center;">
--16.61
-</td>
-<td style="text-align:center;">
-9.76
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--0.83
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-63.27
-</td>
-<td style="text-align:center;">
--39.94
-</td>
-<td style="text-align:center;">
-6.24
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
--1.88
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-120.75
-</td>
-<td style="text-align:center;">
-6.98
-</td>
-<td style="text-align:center;">
-13.83
-</td>
-<td style="text-align:center;">
-e
-</td>
-<td style="text-align:center;">
--0.95
-</td>
-</tr>
-</tbody>
-</table>
+<pre class="r"><code>#neighborhoods &lt;- st_read(dsn = path.expand(&quot;violation_count2.shp&quot;), layer = &quot;violation_count2&quot;)
+URL &lt;- &quot;https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson&quot;
+neighborhoods &lt;- st_read(dsn = URL)</code></pre>
+<pre><code>## Reading layer `violation_count3&#39; from data source `https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson&#39; using driver `GeoJSON&#39;
+## Simple feature collection with 35 features and 14 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -78.91246 ymin: 42.82603 xmax: -78.79504 ymax: 42.96641
+## geographic CRS: WGS 84</code></pre>
+<pre class="r"><code>#neighborhood &lt;- st_as_sf(neighborhoods,4326)
+color_viol &lt;- brewer.pal(5, &quot;Blues&quot;)
+color_viol &lt;- colorRampPalette(color_viol)(35)
+census_tracts &lt;- cut(neighborhood$NUMPOINTS, 35)
+color_viol &lt;- color_viol[as.numeric(census_tracts)]
+
+#neighborhoods &lt;- st_read(dsn = path.expand(&quot;violation_count.shp&quot;), layer = &quot;violation_count&quot;)</code></pre>
+<pre class="r"><code>library(tmap)
+library(ggmap)
+
+#Expand bbox to accommodate for a title and legend
+nbhd_bbox &lt;- st_bbox(neighborhood)
+
+print(nbhd_bbox)</code></pre>
+<pre><code>##      xmin      ymin      xmax      ymax 
+## -78.91246  42.82603 -78.79504  42.96641</code></pre>
+<pre class="r"><code>xrange &lt;- nbhd_bbox$xmax - nbhd_bbox$xmin
+yrange &lt;- nbhd_bbox$ymax - nbhd_bbox$ymin
+
+nbhd_bbox[1] &lt;- nbhd_bbox[1] - (0.3 * xrange) #learned how to efficiently adjust the bbox from stack overflow
+nbhd_bbox[3] &lt;- nbhd_bbox[3] + (0.3 * xrange)
+nbhd_bbox[2] &lt;- nbhd_bbox[2] - (0.2 * yrange)
+nbhd_bbox[4] &lt;- nbhd_bbox[4] + (0.2 * yrange)</code></pre>
+<pre class="r"><code>URL2 &lt;- &quot;https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson&quot;
+demographics &lt;- st_read(dsn = URL2)</code></pre>
+<pre><code>## Reading layer `Neighborhood_Statistics&#39; from data source `https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson&#39; using driver `GeoJSON&#39;
+## Simple feature collection with 35 features and 135 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -78.91246 ymin: 42.82603 xmax: -78.79504 ymax: 42.96641
+## geographic CRS: WGS 84</code></pre>
+<pre class="r"><code>#st_as_sf(demographics,4326)
+
+#Edits to the bbox to accommodate for a title and legend
+buff_bbox &lt;- st_bbox(demographics)
+print(buff_bbox)</code></pre>
+<pre><code>##      xmin      ymin      xmax      ymax 
+## -78.91246  42.82603 -78.79504  42.96641</code></pre>
+<pre class="r"><code>xrange &lt;- buff_bbox$xmax - buff_bbox$xmin
+yrange &lt;- buff_bbox$ymax - buff_bbox$ymin
+
+buff_bbox[1] &lt;- buff_bbox[1] - (0.25 * xrange) #learned how to efficiently adjust the bbox from stack overflow
+buff_bbox[3] &lt;- buff_bbox[3] + (0.25 * xrange)
+buff_bbox[2] &lt;- buff_bbox[2] - (0.2 * yrange)
+buff_bbox[4] &lt;- buff_bbox[4] + (0.2 * yrange)</code></pre>
 <p>Add any additional processing steps here.</p>
 </div>
 </div>
@@ -628,31 +488,50 @@ e
 <p>[~200 words]</p>
 <p>Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.</p>
 <p>Show tables, plots, etc. and describe them.</p>
-<pre class="r"><code>m &lt;- leaflet(data) %&gt;% 
-  addTiles() %&gt;% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %&gt;% 
-  addPopups(~x[2], ~y[2], &quot;Random popup&quot;)
-m  # a map with the default OSM tile layer</code></pre>
-<div class="figure">
-<div id="htmlwidget-30fe21b4c0b9f4d96b62" style="width:576px;height:288px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-30fe21b4c0b9f4d96b62">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[9.30170754902065,-29.8280154448003,-31.8831084296107,-4.68705408275127,12.7471503429115,-40.6861814763397,-41.9714264106005,-16.6061587259173,-39.9376808758825,6.97950504720211,-56.0505143646151,28.2724470645189,7.67273761332035,-56.2407155614346,-18.906586188823,-5.07408133707941,51.0753118805587,26.2375680729747,-17.2111759800464,-46.0531650390476],[-107.258561421186,-111.136349346489,110.316809182987,50.9994036052376,-31.7576803732663,-154.283440634608,101.267439471558,9.98111807741225,63.2684198208153,120.751987276599,112.084084013477,-40.2497000433505,115.996386688203,-97.0774834044278,46.3868192397058,18.0404147878289,32.6691307034343,162.665719650686,-130.348035022616,-98.0877787526697],[11.3611012336332,10.7176390814129,14.2767865059432,15.9402201732155,6.31799388560466,6.9598665041849,10.1387770706788,9.75600986974314,6.24454097007401,13.8269931823015,6.06261725537479,11.9514911866281,5.6887250544969,12.722786962986,5.86161236860789,12.1091489249375,16.6473157645669,8.31269876798615,12.4877287016716,17.8843388694804],null,null,{"interactive":true,"className":"","stroke":true,"color":["c","c","d","e","c","a","b","c","d","e","b","b","b","e","a","e","d","e","b","c"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["c","c","d","e","c","a","b","c","d","e","b","b","b","e","a","e","d","e","b","c"],"fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPopups","args":[-29.8280154448003,-111.136349346489,"Random popup",null,null,{"maxWidth":300,"minWidth":50,"autoPan":true,"keepInView":false,"closeButton":true,"className":""}]}],"limits":{"lat":[-56.2407155614346,51.0753118805587],"lng":[-154.283440634608,162.665719650686]}},"evals":[],"jsHooks":[]}</script>
-<p class="caption">
-Map of completely random data
-</p>
 </div>
-<pre class="r"><code>data %&gt;% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div id="housing-violations-map" class="section level1">
+<h1>Housing Violations Map</h1>
+<pre class="r"><code>tm_shape(neighborhood, bbox = nbhd_bbox)+
+    #tm_polygons(col = &quot;NUMPOINTS&quot;, palette = blues9)+
+    tm_fill(&quot;NUMPOINTS&quot;, title = &quot;Housing\nViolations&quot;, palette = blues9, n = 9)+
+    tm_borders()+               #helped by Collin
+    tm_layout(title = &quot;Housing Violations By Neighborhood&quot;, title.position = c(&quot;center&quot;,&quot;top&quot;), 
+              title.bg.color = &quot;gray&quot;, title.bg.alpha = 0.5)</code></pre>
+<p><img src="index_files/figure-html/Housing%20Violations%20Map-1.png" width="672" /></p>
+<p>With this map, what I found to be informative is how the housing violations seem to be clustered largely in the East side, around UB South campus, and isolated sections of the West side. While I expected the number to be high in the East side and parts of the West side due to the poor state of the housing stock in that area, I was a bit surprised at the higher concentration in the upper bounds of the West side, as I never viewed that area as having issues with housing quality.That being said, the distribution of violations by neighborhood won’t be perfectly representative of the actual situation because different neighborhoods have various percentages of units that are rentals and might be less populous due to an abundance of vacant lots.</p>
+</div>
+<div id="poverty-rate-map" class="section level1">
+<h1>Poverty Rate Map</h1>
+<pre class="r"><code>tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill(&quot;Poverty.Ra&quot;, title = &quot;Poverty Rate&quot;, palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = &quot;Poverty Rate By Neighborhood &quot;, title.position = c(&quot;center&quot;,&quot;top&quot;), title.bg.color = &quot;gray&quot;, 
+             title.bg.alpha = 0.5)</code></pre>
+<p><img src="index_files/figure-html/Poverty%20Rate-1.png" width="672" /></p>
+<p>This map focuses on the issue of economic segregation in Buffalo that many of us are already aware of, where North and South Buffalo are predominately middle class while the East side and parts of the West side are predominately lower income. As stated above, my initial thoughts were that violation reports would be largely concentrated in the East and West sides of Buffalo due to what I perceived to be a large number of rentals relative to the other areas of the city.</p>
+</div>
+<div id="racial-demographics-map" class="section level1">
+<h1>Racial Demographics Map</h1>
+<pre class="r"><code>tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill(&quot;Percent.Wh&quot;, title = &quot;Percent\nWhite&quot;, palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = &quot;Percent White By Neighborhood&quot;, title.position = c(&quot;center&quot;,&quot;top&quot;), title.bg.color = &quot;gray&quot;, 
+             title.bg.alpha = 0.5)</code></pre>
+<p><img src="index_files/figure-html/racial%20demographics-1.png" width="672" /></p>
+<p>I set this neighborhood to percent white as unfortunately, OpenDataBuffalo doesn’t have a field for all nonwhite racial groups. What this graph shows us when compared to housing violations is that there is a strong correlation between issues of rentals being poorly maintained by the owners and these rentals being in majority-minority neighborhoods. That being said, it’s important to take this finding with a grain of salt, as while there is a correlation, the true strength of this correlation is difficult to verify as there can be other issues behind the scenes such as whether the housing violation calls were deemed to be justified or not and how some neighborhoods are dominated by single family homes that are largely owned by their occupants.</p>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
 <p>[~200 words]</p>
 <p>Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.</p>
+<p>After finishing all of the maps that I’m using to gather information on what seems to correlate to higher numbers of housing violations, it seems that housing violations are fairly representative of the issues of racial and economic segregation that is seen in Buffalo.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
 <p>All sources are cited in a consistent manner</p>
+<p><a href="https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/" class="uri">https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/</a></p>
+<p><a href="https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html" class="uri">https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html</a></p>
+<p><a href="https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap" class="uri">https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap</a></p>
 </div>
 
 <!-- give the footer some space -->
@@ -679,7 +558,7 @@ Map of completely random data
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
