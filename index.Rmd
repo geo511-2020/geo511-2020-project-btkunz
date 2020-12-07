@@ -171,11 +171,28 @@ tm_shape(demographics, bbox = buff_bbox)+
 
   This map focuses on the issue of economic segregation in Buffalo that many of us are already aware of, where North and South Buffalo are predominately middle class while the East side and parts of the West side are predominately lower income. As stated above, my initial thoughts were that violation reports would be largely concentrated in the East and West sides of Buffalo due to what I perceived to be a large number of rentals relative to the other areas of the city. 
 
+# Racial Demographics Map
+
+```{r racial demographics}
+tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill("Percent.Wh", title = "Percent\nWhite", palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = "Percent White By Neighborhood", title.position = c("center","top"), title.bg.color = "gray", 
+             title.bg.alpha = 0.5)
+```
+
+  I set this neighborhood to percent white as unfortunately, OpenDataBuffalo doesn't have a field for all nonwhite racial groups. What this graph shows us when compared to housing violations is that there is a strong correlation between issues of rentals being poorly maintained by the owners and these rentals being in majority-minority neighborhoods. That being said, it's important to take this finding with a grain of salt, as while there is a correlation, the true strength of this correlation is difficult to verify as there can be other issues behind the scenes such as whether the housing violation calls were deemed to be justified or not and how some neighborhoods are dominated by single family homes that are largely owned by their occupants. 
+
+
+
+
 # Conclusions
 
 [~200 words]
 
 Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
+
+After finishing all of the maps that I'm using to gather information on what seems to correlate to higher numbers of housing violations, it seems that housing violations are fairly representative of the issues of racial and economic segregation that is seen in Buffalo. 
 
 # References
 
