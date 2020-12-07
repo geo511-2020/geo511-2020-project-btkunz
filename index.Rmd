@@ -61,7 +61,7 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
 ## Download and clean all required data
-```{r housing violation map prep}
+```{r housing violation map prep, message=F, warning=F}
 #neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
 URL <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson"
 neighborhoods <- st_read(dsn = URL)
@@ -91,21 +91,6 @@ nbhd_bbox[1] <- nbhd_bbox[1] - (0.3 * xrange) #learned how to efficiently adjust
 nbhd_bbox[3] <- nbhd_bbox[3] + (0.3 * xrange)
 nbhd_bbox[2] <- nbhd_bbox[2] - (0.2 * yrange)
 nbhd_bbox[4] <- nbhd_bbox[4] + (0.2 * yrange)
-
-
- tm_shape(neighborhood, bbox = nbhd_bbox)+
-    #tm_polygons(col = "NUMPOINTS", palette = blues9)+
-    tm_fill("NUMPOINTS", title = "Housing\nViolations", palette = blues9, n = 9)+
-    tm_borders()+               #helped by Collin
-    tm_layout(title = "Housing Violations By Neighborhood", title.position = c("center","top"), 
-              title.bg.color = "gray", title.bg.alpha = 0.5)
-#ggplot(data = neighborhood)+ 
-#geom_sf()
-# plot(neighborhoods["NUMPOINTS"], col = color_viol, main = "Housing violation reports by neighborhood")
-# legend("bottomright", title = "Housing Violations", legend = levels(cut(neighborhoods$NUMPOINTS, 5)), fill = color_viol) #ISSUE TO NOTE: it seems that the legend is uncooperative in matching the correct colors to the different values so whomever is peer reviewing this, do you have any suggestions?  
-# plot1 <- ggplot(neighborhood["NUMPOINTS"],aes(x=x,y=y, col = color_viol))+
-#   geom_polygon(aes(fill = color_viol))
-# plot1
 ```
 
 
@@ -202,3 +187,4 @@ https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/
 
 https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html
 
+https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap
