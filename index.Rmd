@@ -41,7 +41,7 @@ See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the a
 
 Load any required packages in a code chunk (you may need to install some packages):
 
-```{r, message=F, warning=F}
+```{r Libraries, message=F, warning=F}
 library(tibble)
 library(rgdal)
 library(sp)
@@ -76,7 +76,7 @@ color_viol <- color_viol[as.numeric(census_tracts)]
 
 ```
 
-```{r}
+```{r Housing Violations Map}
 library(tmap)
 library(ggmap)
 #str(neighborhood)
