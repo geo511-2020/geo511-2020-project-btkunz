@@ -65,7 +65,7 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 #neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
 URL <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson"
 neighborhoods <- st_read(dsn = URL)
-neighborhood <- st_as_sf(neighborhoods,4326)
+#neighborhood <- st_as_sf(neighborhoods,4326)
 str(neighborhoods)
 color_viol <- brewer.pal(5, "Blues")
 color_viol <- colorRampPalette(color_viol)(35)
@@ -76,12 +76,9 @@ color_viol <- color_viol[as.numeric(census_tracts)]
 
 ```
 
-```{r Housing Violations Map}
+```{r Housing Violations}
 library(tmap)
 library(ggmap)
-#str(neighborhood)
- # ggplot(col = neighborhood$NUMPOINTS)+
- #     geom_sf(data = neighborhoods, aes(x=x,y=y, fill = color_viol))
 
 #Expand bbox to accommodate for a title and legend
 nbhd_bbox <- st_bbox(neighborhood)
@@ -110,18 +107,15 @@ nbhd_bbox[4] <- nbhd_bbox[4] + (0.2 * yrange)
 # plot1 <- ggplot(neighborhood["NUMPOINTS"],aes(x=x,y=y, col = color_viol))+
 #   geom_polygon(aes(fill = color_viol))
 # plot1
- 
- 
- #Check out geom_sf to plot polygons rather than using x and y
 ```
 
 
 
 
-```{r Poverty Rate}
+```{r Poverty }
 URL2 <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson"
 demographics <- st_read(dsn = URL2)
-st_as_sf(demographics,4326)
+#st_as_sf(demographics,4326)
 
 #Edits to the bbox to accommodate for a title and legend
 buff_bbox <- st_bbox(demographics)
@@ -135,21 +129,11 @@ buff_bbox[3] <- buff_bbox[3] + (0.25 * xrange)
 buff_bbox[2] <- buff_bbox[2] - (0.2 * yrange)
 buff_bbox[4] <- buff_bbox[4] + (0.2 * yrange)
 
-tm_shape(demographics, bbox = buff_bbox)+
-   tm_fill("Poverty.Ra", title = "Poverty Rate", palette = blues9, n = 9)+
-   tm_borders()+
-   tm_layout(title = "Poverty Rate By Neighborhood ", title.position = c("center","top"), title.bg.color = "gray", 
-             title.bg.alpha = 0.5)
-
-#color_scheme <- brewer.pal(5, "Blues")
-#color_scheme <- colorRampPalette(color_scheme)(35)
-
-#census_tract <- cut(demographics$Percent.Wh, 35) 
-#color_scheme <- color_scheme[as.numeric(census_tract)]
-#str(demographics$Percent.Wh)
-#print(demographics$Percent.Wh)
-
-#plot(demographics["Percent.Wh"], col = color_scheme)
+# tm_shape(demographics, bbox = buff_bbox)+
+#    tm_fill("Poverty.Ra", title = "Poverty Rate", palette = blues9, n = 9)+
+#    tm_borders()+
+#    tm_layout(title = "Poverty Rate By Neighborhood ", title.position = c("center","top"), title.bg.color = "gray",
+#              title.bg.alpha = 0.5)
 
 ```
 
@@ -163,13 +147,30 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 
 Show tables, plots, etc. and describe them.
 
-```{r}
-plot(demographics["Percent.Wh"], col = color_scheme, main = "Percent White by Neighborhood")
-legend("bottomright", title = "Percent White", legend = levels(cut(demographics$Percent.Wh, 5)), fill = color_scheme)
-     
+# Housing Violations Map
+
+```{r Housing Violations Map}
+tm_shape(neighborhood, bbox = nbhd_bbox)+
+    #tm_polygons(col = "NUMPOINTS", palette = blues9)+
+    tm_fill("NUMPOINTS", title = "Housing\nViolations", palette = blues9, n = 9)+
+    tm_borders()+               #helped by Collin
+    tm_layout(title = "Housing Violations By Neighborhood", title.position = c("center","top"), 
+              title.bg.color = "gray", title.bg.alpha = 0.5)
 ```
 
-  This map focuses on the issue of lingering segregation in Buffalo that many of us are already aware of, where North and South Buffalo are predominately White while the East side is predominately Black. As stated above, my initial thoughts were that violation reports would be largely concentrated in the East and West sides of Buffalo due to what I perceived to be a large number of rentals relative to the other areas of the city. 
+  With this map, what I found to be informative is how the housing violations seem to be clustered largely in the East side, around UB South campus, and isolated sections of the West side. While I expected the number to be high in the East side and parts of the West side due to the poor state of the housing stock in that area, I was a bit surprised at the higher concentration in the upper bounds of the West side, as I never viewed that area as having issues with housing quality.That being said, the distribution of violations by neighborhood won't be perfectly representative of the actual situation because different neighborhoods have various percentages of units that are rentals and might be less populous due to an abundance of vacant lots.
+
+# Poverty Rate Map
+
+```{r Poverty Rate}
+tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill("Poverty.Ra", title = "Poverty Rate", palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = "Poverty Rate By Neighborhood ", title.position = c("center","top"), title.bg.color = "gray", 
+             title.bg.alpha = 0.5)
+```
+
+  This map focuses on the issue of economic segregation in Buffalo that many of us are already aware of, where North and South Buffalo are predominately middle class while the East side and parts of the West side are predominately lower income. As stated above, my initial thoughts were that violation reports would be largely concentrated in the East and West sides of Buffalo due to what I perceived to be a large number of rentals relative to the other areas of the city. 
 
 # Conclusions
 
