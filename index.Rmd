@@ -66,7 +66,6 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 URL <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson"
 neighborhoods <- st_read(dsn = URL)
 #neighborhood <- st_as_sf(neighborhoods,4326)
-str(neighborhoods)
 color_viol <- brewer.pal(5, "Blues")
 color_viol <- colorRampPalette(color_viol)(35)
 census_tracts <- cut(neighborhood$NUMPOINTS, 35)
@@ -183,4 +182,6 @@ Clear summary adequately describing the results and putting them in context. Dis
 All sources are cited in a consistent manner
 
 https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/
+
+https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html
 
