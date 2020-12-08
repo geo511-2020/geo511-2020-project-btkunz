@@ -391,21 +391,6 @@ div.tocify {
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
 <p>[~ 200 words]</p>
-<p>Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.</p>
-<p>Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.</p>
-<p>Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.</p>
-<p>You can do bullets like this:</p>
-<ul>
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ul>
-<p>You can do numbers like this:</p>
-<ol style="list-style-type: decimal">
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ol>
 <p>See <a href="http://rmarkdown.rstudio.com/">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
 <p>Load any required packages in a code chunk (you may need to install some packages):</p>
 <pre class="r"><code>library(tibble)
@@ -426,6 +411,7 @@ library(kableExtra)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
 <div id="download-and-clean-all-required-data" class="section level2">
 <h2>Download and clean all required data</h2>
+<p>All of the data downloaded and referenced in this project is either from the 311 requests data found in OpenDataBuffalo or from the neighborhood profile data lens which can also be found from OpenDataBuffalo.</p>
 <pre class="r"><code>#neighborhoods &lt;- st_read(dsn = path.expand(&quot;violation_count2.shp&quot;), layer = &quot;violation_count2&quot;)
 URL &lt;- &quot;https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson&quot;
 neighborhoods &lt;- st_read(dsn = URL)</code></pre>
@@ -435,23 +421,14 @@ neighborhoods &lt;- st_read(dsn = URL)</code></pre>
 ## dimension:      XY
 ## bbox:           xmin: -78.91246 ymin: 42.82603 xmax: -78.79504 ymax: 42.96641
 ## geographic CRS: WGS 84</code></pre>
-<pre class="r"><code>#neighborhood &lt;- st_as_sf(neighborhoods,4326)
-color_viol &lt;- brewer.pal(5, &quot;Blues&quot;)
-color_viol &lt;- colorRampPalette(color_viol)(35)
-census_tracts &lt;- cut(neighborhood$NUMPOINTS, 35)
-color_viol &lt;- color_viol[as.numeric(census_tracts)]
-
-#neighborhoods &lt;- st_read(dsn = path.expand(&quot;violation_count.shp&quot;), layer = &quot;violation_count&quot;)</code></pre>
+<pre class="r"><code>#neighborhood &lt;- st_as_sf(neighborhoods,4326)</code></pre>
 <pre class="r"><code>library(tmap)
 library(ggmap)
 
 #Expand bbox to accommodate for a title and legend
 nbhd_bbox &lt;- st_bbox(neighborhood)
 
-print(nbhd_bbox)</code></pre>
-<pre><code>##      xmin      ymin      xmax      ymax 
-## -78.91246  42.82603 -78.79504  42.96641</code></pre>
-<pre class="r"><code>xrange &lt;- nbhd_bbox$xmax - nbhd_bbox$xmin
+xrange &lt;- nbhd_bbox$xmax - nbhd_bbox$xmin
 yrange &lt;- nbhd_bbox$ymax - nbhd_bbox$ymin
 
 nbhd_bbox[1] &lt;- nbhd_bbox[1] - (0.3 * xrange) #learned how to efficiently adjust the bbox from stack overflow
@@ -519,12 +496,20 @@ buff_bbox[4] &lt;- buff_bbox[4] + (0.2 * yrange)</code></pre>
              title.bg.alpha = 0.5)</code></pre>
 <p><img src="index_files/figure-html/racial%20demographics-1.png" width="672" /></p>
 <p>I set this neighborhood to percent white as unfortunately, OpenDataBuffalo doesn’t have a field for all nonwhite racial groups. What this graph shows us when compared to housing violations is that there is a strong correlation between issues of rentals being poorly maintained by the owners and these rentals being in majority-minority neighborhoods. That being said, it’s important to take this finding with a grain of salt, as while there is a correlation, the true strength of this correlation is difficult to verify as there can be other issues behind the scenes such as whether the housing violation calls were deemed to be justified or not and how some neighborhoods are dominated by single family homes that are largely owned by their occupants.</p>
+<p>#Rental Sharers Map</p>
+<pre class="r"><code>tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill(&quot;Share.Rent&quot;, title = &quot;Percent\nShare\nRent&quot;, palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = &quot;Percent Rent Sharers By Neighborhood&quot;, title.position = c(&quot;center&quot;,&quot;top&quot;), title.bg.color = &quot;gray&quot;, 
+             title.bg.alpha = 0.5)</code></pre>
+<p><img src="index_files/figure-html/Shared%20Rentals-1.png" width="672" /></p>
+<p>This map seems to give us a fairly clear correlation between having apartment rent split between roommates and higher levels of housing violations. This could potentially be linked back to the issue of poverty where some people who don’t have enough money must live with roommates in lower income areas of cities that they can afford. There is a chance that some units may have an overcrowding issue caused by problematic landlords that are reluctant to make necessary repairs to the properties they own, so that could be something to look into more if I can find more detailed data outside of OpenDataBuffalo.</p>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
 <p>[~200 words]</p>
 <p>Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.</p>
-<p>After finishing all of the maps that I’m using to gather information on what seems to correlate to higher numbers of housing violations, it seems that housing violations are fairly representative of the issues of racial and economic segregation that is seen in Buffalo.</p>
+<p>After finishing all of the maps that I’m using to gather information on what seems to correlate to higher numbers of housing violations, it seems that housing violations are fairly representative of the issues of racial and economic segregation that is seen in Buffalo. As seen in the maps displayed above, the highest concentration of housing violations comes from the Broadway-Fillmore neighborhood within the East Side. As I lack a lot of knowledge of that neighborhood, I believe it would be interesting to look at potential reasons as to why the number of housing violations in this neighborhood is so far above other neighborhoods with otherwise similar demographics. From what information I’ve been able to gather it seems that areas where people tend to share an apartment and split rent with others have a higher prevalence of housing violations, as can especially be seen in the Broadway-Fillmore neighborhood. Although this project has been a bit inconclusive, the maps corroborate a statement made at the introduction where issues such as poor housing quality are the result of a great many issues rather than just one as I initially felt it possibly could be.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
@@ -532,6 +517,10 @@ buff_bbox[4] &lt;- buff_bbox[4] + (0.2 * yrange)</code></pre>
 <p><a href="https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/" class="uri">https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/</a></p>
 <p><a href="https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html" class="uri">https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html</a></p>
 <p><a href="https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap" class="uri">https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap</a></p>
+<p><a href="https://www.qgistutorials.com/en/docs/performing_spatial_joins.html" class="uri">https://www.qgistutorials.com/en/docs/performing_spatial_joins.html</a></p>
+<p><a href="https://data.buffalony.gov/view/bfab-gy8p" class="uri">https://data.buffalony.gov/view/bfab-gy8p</a></p>
+<p><a href="https://data.buffalony.gov/Quality-of-Life/311-Service-Requests-Opened-in-2018/3m6w-6utv" class="uri">https://data.buffalony.gov/Quality-of-Life/311-Service-Requests-Opened-in-2018/3m6w-6utv</a></p>
+<p><a href="https://data.buffalony.gov/Economic-Neighborhood-Development/Neighborhoods/q9bk-zu3p" class="uri">https://data.buffalony.gov/Economic-Neighborhood-Development/Neighborhoods/q9bk-zu3p</a></p>
 </div>
 
 <!-- give the footer some space -->

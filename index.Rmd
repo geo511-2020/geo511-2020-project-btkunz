@@ -17,25 +17,6 @@ For my project, I’ll be looking at 311 requests in Buffalo that allege code vi
 
 [~ 200 words]
 
-Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.
-
-Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
-
-
-Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
-
-You can do bullets like this:
-
-* The first most important thing
-* The second most important thing
-* The third most important thing 
-
-You can do numbers like this:
-
-1. The first most important thing
-2. The second most important thing
-3. The third most important thing
-
 See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the amazing things you can do.
 
 
@@ -61,28 +42,20 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
 ## Download and clean all required data
+All of the data downloaded and referenced in this project is either from the 311 requests data found in OpenDataBuffalo or from the neighborhood profile data lens which can also be found from OpenDataBuffalo.
 ```{r housing violation map prep, message=F, warning=F}
 #neighborhoods <- st_read(dsn = path.expand("violation_count2.shp"), layer = "violation_count2")
 URL <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/violation_count3.geojson"
 neighborhoods <- st_read(dsn = URL)
 #neighborhood <- st_as_sf(neighborhoods,4326)
-color_viol <- brewer.pal(5, "Blues")
-color_viol <- colorRampPalette(color_viol)(35)
-census_tracts <- cut(neighborhood$NUMPOINTS, 35)
-color_viol <- color_viol[as.numeric(census_tracts)]
-
-#neighborhoods <- st_read(dsn = path.expand("violation_count.shp"), layer = "violation_count")
-
 ```
 
-```{r Housing Violations}
+```{r Housing Violations, message=F, warning=F}
 library(tmap)
 library(ggmap)
 
 #Expand bbox to accommodate for a title and legend
 nbhd_bbox <- st_bbox(neighborhood)
-
-print(nbhd_bbox)
 
 xrange <- nbhd_bbox$xmax - nbhd_bbox$xmin
 yrange <- nbhd_bbox$ymax - nbhd_bbox$ymin
@@ -96,7 +69,7 @@ nbhd_bbox[4] <- nbhd_bbox[4] + (0.2 * yrange)
 
 
 
-```{r Poverty }
+```{r Poverty, message=F, warning=F}
 URL2 <- "https://raw.githubusercontent.com/geo511-2020/geo511-2020-project-btkunz/master/Neighborhood_Statistics.geojson"
 demographics <- st_read(dsn = URL2)
 #st_as_sf(demographics,4326)
@@ -161,7 +134,17 @@ tm_shape(demographics, bbox = buff_bbox)+
 
   I set this neighborhood to percent white as unfortunately, OpenDataBuffalo doesn't have a field for all nonwhite racial groups. What this graph shows us when compared to housing violations is that there is a strong correlation between issues of rentals being poorly maintained by the owners and these rentals being in majority-minority neighborhoods. That being said, it's important to take this finding with a grain of salt, as while there is a correlation, the true strength of this correlation is difficult to verify as there can be other issues behind the scenes such as whether the housing violation calls were deemed to be justified or not and how some neighborhoods are dominated by single family homes that are largely owned by their occupants. 
 
+#Rental Sharers Map
 
+```{r Shared Rentals}
+tm_shape(demographics, bbox = buff_bbox)+
+   tm_fill("Share.Rent", title = "Percent\nShare\nRent", palette = blues9, n = 9)+
+   tm_borders()+
+   tm_layout(title = "Percent Rent Sharers By Neighborhood", title.position = c("center","top"), title.bg.color = "gray", 
+             title.bg.alpha = 0.5)
+```
+
+This map seems to give us a fairly clear correlation between having apartment rent split between roommates and higher levels of housing violations. This could potentially be linked back to the issue of poverty where some people who don't have enough money must live with roommates in lower income areas of cities that they can afford. There is a chance that some units may have an overcrowding issue caused by problematic landlords that are reluctant to make necessary repairs to the properties they own, so that could be something to look into more if I can find more detailed data outside of OpenDataBuffalo.
 
 
 # Conclusions
@@ -170,7 +153,7 @@ tm_shape(demographics, bbox = buff_bbox)+
 
 Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
 
-After finishing all of the maps that I'm using to gather information on what seems to correlate to higher numbers of housing violations, it seems that housing violations are fairly representative of the issues of racial and economic segregation that is seen in Buffalo. 
+After finishing all of the maps that I'm using to gather information on what seems to correlate to higher numbers of housing violations, it seems that housing violations are fairly representative of the issues of racial and economic segregation that is seen in Buffalo. As seen in the maps displayed above, the highest concentration of housing violations comes from the Broadway-Fillmore neighborhood within the East Side. As I lack a lot of knowledge of that neighborhood, I believe it would be interesting to look at potential reasons as to why the number of housing violations in this neighborhood is so far above other neighborhoods with otherwise similar demographics. From what information I've been able to gather it seems that areas where people tend to share an apartment and split rent with others have a higher prevalence of housing violations, as can especially be seen in the Broadway-Fillmore neighborhood. Although this project has been a bit inconclusive, the maps corroborate a statement made at the introduction where issues such as poor housing quality are the result of a great many issues rather than just one as I initially felt it possibly could be.
 
 # References
 
@@ -181,3 +164,13 @@ https://www.jla-data.net/eng/adjusting-bounding-box-of-a-tmap-map/
 https://spatialanalysis.github.io/lab_tutorials/4_R_Mapping.html
 
 https://stackoverflow.com/questions/60892033/how-do-you-position-the-title-and-legend-in-tmap
+
+https://www.qgistutorials.com/en/docs/performing_spatial_joins.html
+
+https://data.buffalony.gov/view/bfab-gy8p
+
+https://data.buffalony.gov/Quality-of-Life/311-Service-Requests-Opened-in-2018/3m6w-6utv
+
+https://data.buffalony.gov/Economic-Neighborhood-Development/Neighborhoods/q9bk-zu3p
+
+
